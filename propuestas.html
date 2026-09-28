@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buzón de propuestas</title>
+<style>
+:root{--bg:#faf8f5;--card:#fff;--tx:#1f1d1a;--mu:#6b665e;--bd:#e4dfd6;--ac:#c2410c;--acbg:#fff1e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1816;--card:#25221f;--tx:#f2eee8;--mu:#a39d93;--bd:#3a3631;--ac:#fb923c;--acbg:#3a2a1f}}
+:root[data-theme="dark"]{--bg:#1a1816;--card:#25221f;--tx:#f2eee8;--mu:#a39d93;--bd:#3a3631;--ac:#fb923c;--acbg:#3a2a1f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;margin:0 0 4px;background:linear-gradient(90deg,#f97316,#db2777,#6366f1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mu);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+#list .card{--cc:#6366f1;border-left:8px solid var(--cc);background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 14%,var(--card)),var(--card) 65%);box-shadow:0 4px 14px color-mix(in srgb,var(--cc) 18%,transparent);transition:transform .15s,box-shadow .15s}
+#list .card:hover{transform:translateY(-3px);box-shadow:0 10px 22px color-mix(in srgb,var(--cc) 30%,transparent)}
+#form{max-width:720px;margin-left:auto;margin-right:auto;border:2px dashed var(--ac);background:var(--acbg)}
+input,textarea,select{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:10px}
+textarea{min-height:84px;resize:vertical}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 14px}
+button.p{background:linear-gradient(135deg,#f97316,#db2777);border:0;color:#fff;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 12px rgba(219,39,119,.35)}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;align-items:flex-start}
+.vote{flex:none;min-width:60px;text-align:center;padding:10px 6px;line-height:1.2;border-radius:14px;border:2px solid var(--cc);color:var(--cc);background:var(--card);font-weight:700}
+.vote.on{background:var(--cc);color:#fff}
+.vote b{display:block;font-size:1.3rem}
+.body{flex:1;min-width:0}
+.body h3{margin:0 0 6px;font-size:1.2rem;font-weight:800}
+.body p{margin:0 0 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.82rem;color:var(--mu)}
+.tag{background:var(--cc);color:#fff;border-radius:99px;padding:3px 12px;font-weight:700}
+.st{border:2px solid var(--sc);color:var(--sc);border-radius:99px;padding:1px 10px;font-weight:700}
+.meta select{width:auto;margin:0;padding:3px 6px;font-size:.82rem}
+.bar{display:flex;gap:8px;margin-bottom:14px}
+.bar select{margin:0}
+#list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;align-items:start}
+.box{border:2px solid var(--sc);border-radius:20px;padding:12px;background:color-mix(in srgb,var(--sc) 7%,var(--bg))}
+.box header{display:flex;justify-content:space-between;align-items:center;background:var(--sc);color:#fff;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-weight:800;font-size:1.05rem}
+.box header em{font-style:normal;background:rgba(255,255,255,.28);border-radius:99px;padding:0 10px}
+.box .card:last-child{margin-bottom:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+#gear{font-size:1.3rem;padding:6px 12px;border-radius:99px;flex:none}
+.h2{font-size:1.2rem;margin:22px 0 10px}
+.del{padding:2px 10px;font-size:.82rem;color:#ef4444;border-color:#ef4444}
+#pub .card{--cc:#6366f1;border-left:8px solid var(--cc);background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 14%,var(--card)),var(--card) 65%);box-shadow:0 4px 14px color-mix(in srgb,var(--cc) 18%,transparent)}
+.note{color:var(--mu);text-align:center;padding:24px 0}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div><h1>💡 Buzón de propuestas</h1>
+  <p class="sub">Comparte tu idea. Las aprobadas aparecen abajo para votar.</p></div>
+  <button id="gear" title="Configuración">⚙️</button></div>
+  <div id="gmsg" class="sub"></div>
+  <div class="card" id="gate" hidden><b id="gt"></b><input id="gp" type="password" autocomplete="off" placeholder="Contraseña" style="margin-top:10px"><button class="p" id="gok">Aceptar</button> <button id="gx">Cancelar</button></div>
+  <div id="pubView">
+
+  <div class="card" id="form">
+    <input id="t" maxlength="90" placeholder="Título de tu propuesta">
+    <textarea id="d" maxlength="1000" placeholder="Describe tu idea: ¿qué propones y por qué?"></textarea>
+    <select id="c">
+      <option>General</option><option>Mejora</option><option>Evento</option><option>Recurso</option><option>Otro</option>
+    </select>
+    <button class="p" id="send">Enviar propuesta</button>
+    <div id="msg" class="sub" style="margin:8px 0 0"></div>
+  </div>
+
+  <h2 class="h2">Propuestas aprobadas</h2><div id="pub"></div></div>
+  <div id="revView" hidden>
+  <h2 class="h2">⚙️ Revisión de propuestas</h2>
+  <div class="bar"><button id="back">← Volver</button><button id="chg" hidden>🔑 Cambiar contraseña</button>
+    <select id="sort"><option value="votes">Más votadas</option><option value="new">Más recientes</option></select>
+    
+  </div>
+  <div id="list"><div class="note">Cargando…</div></div></div>
+</main>
+
+<script>
+(function(){
+  var ESTADOS=["Nueva","En revisión","Aprobada","Descartada"];
+  var CATS={General:"#6366f1",Mejora:"#10b981",Evento:"#f59e0b",Recurso:"#0ea5e9",Otro:"#ec4899"};
+  var ICO={"Nueva":"🆕","En revisión":"🔎","Aprobada":"✅","Descartada":"🗑️"};
+  var STC={"Nueva":"#3b82f6","En revisión":"#f59e0b","Aprobada":"#10b981","Descartada":"#ef4444"};
+  var $=function(i){return document.getElementById(i)};
+  var unlocked=false,cfg=null,mode="",db=null,uid=null,isAdmin=false,proposals=[],votes=[];
+
+  function esc(s){var d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML}
+
+  function card(p,cnt,mine,adm){
+    var st=p.status||"Nueva";
+    var sel=adm?'<select data-st="'+p.id+'">'+ESTADOS.map(function(e){return '<option'+(e===st?' selected':'')+'>'+e+'</option>'}).join("")+'</select><button class="del" data-del="'+p.id+'">Eliminar</button>':"";
+    return '<div class="card" style="--cc:'+(CATS[p.cat]||"#6366f1")+'"><div class="row"><button class="vote'+(mine[p.id]?' on':'')+'" data-v="'+p.id+'" title="Votar">▲<b>'+(cnt[p.id]||0)+'</b></button>'+
+      '<div class="body"><h3>'+esc(p.title)+'</h3><p>'+esc(p.desc)+'</p><div class="meta"><span class="tag">'+esc(p.cat)+'</span>'+sel+
+      '<span>'+(p.createdAt?new Date(p.createdAt).toLocaleDateString("es"):"")+'</span></div></div></div></div>';
+  }
+  function render(){
+    var cnt={},mine={};
+    votes.forEach(function(v){cnt[v.pid]=(cnt[v.pid]||0)+1;if(v.uid===uid)mine[v.pid]=true});
+    var s=$("sort").value;
+    proposals.sort(function(a,b){return s==="new"?(b.createdAt||0)-(a.createdAt||0):((cnt[b.id]||0)-(cnt[a.id]||0))||((b.createdAt||0)-(a.createdAt||0))});
+    $("list").innerHTML=ESTADOS.map(function(e){
+      var items=proposals.filter(function(p){return (p.status||"Nueva")===e});
+      return '<section class="box" style="--sc:'+STC[e]+'"><header><span>'+ICO[e]+' '+e+'</span><em>'+items.length+'</em></header>'+
+        (items.length?items.map(function(p){return card(p,cnt,mine,true)}).join(""):'<div class="note">Sin propuestas aquí</div>')+'</section>';
+    }).join("");
+    var ap=proposals.filter(function(p){return p.status==="Aprobada"}).sort(function(a,b){return (cnt[b.id]||0)-(cnt[a.id]||0)});
+    $("pub").innerHTML=ap.length?ap.map(function(p){return card(p,cnt,mine,false)}).join(""):'<div class="note">Aún no hay propuestas aprobadas.</div>';
+  }
+
+  function show(rev){$("pubView").hidden=rev;$("revView").hidden=!rev;window.scrollTo(0,0)}
+  function hex(u){return Array.from(u).map(function(x){return x.toString(16).padStart(2,"0")}).join("")}
+  function hashPw(pw,saltHex){
+    var enc=new TextEncoder(),salt=new Uint8Array(saltHex.match(/../g).map(function(h){return parseInt(h,16)}));
+    return crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveBits"]).then(function(k){
+      return crypto.subtle.deriveBits({name:"PBKDF2",salt:salt,iterations:150000,hash:"SHA-256"},k,256)}).then(function(b){return hex(new Uint8Array(b))});
+  }
+  function gate(m){
+    mode=m;$("gp").value="";$("gate").hidden=false;$("gmsg").textContent="";
+    $("gt").textContent=m==="enter"?"🔒 Escribe la contraseña de revisión":m==="create"?"Crea la contraseña de revisión (mínimo 6 caracteres)":"Escribe la nueva contraseña (mínimo 6 caracteres)";
+    $("gp").focus();
+  }
+  $("gear").onclick=function(){
+    if(unlocked){show(true);return}
+    if(!db){$("gmsg").textContent="No disponible en esta vista.";return}
+    db.doc("config/admin").get().then(function(sn){
+      var c=sn.data();cfg=c&&c.hash?c:null;
+      if(cfg)gate("enter");
+      else if(isAdmin)gate("create");
+      else $("gmsg").textContent="Aún no hay contraseña configurada. Pide al administrador que la cree."
+    }).catch(function(){$("gmsg").textContent="No se pudo leer la configuración."});
+  };
+  $("chg").onclick=function(){gate("change")};
+  $("gx").onclick=function(){$("gate").hidden=true};
+  $("gok").onclick=function(){
+    var pw=$("gp").value;
+    if(!window.crypto||!crypto.subtle){$("gmsg").textContent="Este navegador no permite verificar contraseñas.";return}
+    if(mode==="enter"){
+      hashPw(pw,cfg.salt).then(function(h){
+        if(h===cfg.hash){unlocked=true;$("gate").hidden=true;$("chg").hidden=!isAdmin;show(true)}
+        else{$("gmsg").textContent="Contraseña incorrecta.";$("gp").value=""}
+      });return}
+    if(pw.length<6){$("gmsg").textContent="Usa al menos 6 caracteres.";return}
+    var salt=hex(crypto.getRandomValues(new Uint8Array(16)));
+    hashPw(pw,salt).then(function(h){return db.doc("config/admin").set({salt:salt,hash:h}).then(function(){cfg={salt:salt,hash:h};unlocked=true;$("gate").hidden=true;$("chg").hidden=!isAdmin;$("gmsg").textContent="Contraseña guardada.";show(true)})})
+    .catch(function(){$("gmsg").textContent="Solo un editor puede cambiar la contraseña."});
+  };
+  $("back").onclick=function(){show(false)};
+  document.addEventListener("click",function(e){
+    var d=e.target.closest("[data-del]");
+    if(d&&db&&unlocked){
+      if(d.getAttribute("data-arm")){db.doc("proposals/"+d.getAttribute("data-del")).delete().catch(function(){})}
+      else{d.setAttribute("data-arm","1");d.textContent="¿Seguro?"}
+      return}
+
+    var b=e.target.closest("[data-v]");if(!b||!db||!uid)return;
+    var pid=b.getAttribute("data-v"),ref=db.doc("votes/"+pid+"_"+uid);
+    var has=votes.some(function(v){return v.pid===pid&&v.uid===uid});
+    (has?ref.delete():ref.set({pid:pid,uid:uid})).catch(function(e){$("msg").textContent="No se pudo registrar el voto [código: "+(e&&e.code?e.code:"desconocido")+"]"});
+  });
+  $("list").addEventListener("change",function(e){
+    var id=e.target.getAttribute("data-st");
+    if(id&&db)db.doc("proposals/"+id).update({status:e.target.value}).catch(function(){});
+  });
+  $("sort").onchange=render;
+
+  $("send").onclick=function(){
+    var t=$("t").value.trim(),d=$("d").value.trim();
+    if(!t||!d){$("msg").textContent="Escribe un título y una descripción.";return}
+    if(!db){$("msg").textContent="El envío no está disponible en esta vista.";return}
+    $("send").disabled=true;
+    var id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2)).replace(/[^a-zA-Z0-9-]/g,"");
+    db.doc("proposals/"+id).set({title:t,desc:d,cat:$("c").value,author:typeof uid==="string"?uid:"",status:"Nueva",createdAt:Date.now()})
+      .then(function(){$("t").value="";$("d").value="";$("msg").textContent="¡Propuesta enviada! Gracias 🙌"})
+      .catch(function(e){var c=e&&e.code?e.code:"desconocido";$("msg").textContent=(c==="not_granted"?"Tu cuenta no puede escribir aquí. ":"No se pudo enviar. ")+"[código: "+c+(e&&e.message?" – "+e.message:"")+"]"})
+      .then(function(){$("send").disabled=false});
+  };
+
+  render();
+  Promise.all([claude.use("db"),claude.use("user")]).then(function(r){
+    db=r[0];var u=r[1];
+    if(!db){$("list").innerHTML='<div class="note">Esta vista no puede conectarse al almacén de propuestas.</div>';return}
+    if(u){Promise.all([u.id(),u.canEdit()]).then(function(a){uid=typeof a[0]==="string"?a[0]:null;isAdmin=a[1]===true;render()}).catch(function(){})}
+    db.collection("proposals").onSnapshot(function(s){proposals=s.docs.map(function(d){var x=d.data()||{};x.id=d.id;return x});render()},function(){});
+    db.collection("votes").onSnapshot(function(s){votes=s.docs.map(function(d){return d.data()||{}});render()},function(){});
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>
